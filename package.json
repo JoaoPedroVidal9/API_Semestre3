@@ -1,0 +1,20 @@
+{
+  "name": "euller",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "start:dev": "nodemon src/server.js"
+  },
+  "author": "Euller Ferreira",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mysql2": "^3.9.3",
+    "nodemon": "^3.1.2"
+  }
+}
