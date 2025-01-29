@@ -314,13 +314,13 @@ module.exports = class scheduleController {
         });
 
         // Ordena os agendamentos dentro de cada lista com base no timeStart
-        Object.keys(schedulesByDay).forEach((day) => {
-          schedulesByDay[day].sort((a, b) => {
-            const timeStartA = new Date(`1970-01-01T${a.timeStart}`);
-            const timeStartB = new Date(`1970-01-01T${b.timeStart}`);
-            return timeStartA - timeStartB;
-          });
-        });
+        // Object.keys(schedulesByDay).forEach((day) => {
+        //   schedulesByDay[day].sort((a, b) => {
+        //     const timeStartA = new Date(`1970-01-01T${a.timeStart}`);
+        //     const timeStartB = new Date(`1970-01-01T${b.timeStart}`);
+        //     return timeStartA - timeStartB;
+        //   });
+        // });
 
         // Retorna os agendamentos organizados por dia da semana e ordenados por timeStart
         return res.status(200).json({ schedulesByDay });
