@@ -1,4 +1,5 @@
 -- init.sql
+USE semestre3
 
 CREATE TABLE `classroom` (
   `number` char(5) NOT NULL,
