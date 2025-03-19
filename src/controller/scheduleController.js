@@ -1,4 +1,5 @@
 const connect = require("../db/connect");
+const validateSchedule = require("../services/validateSchedule")
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(timeStart, timeRange) {
@@ -15,19 +16,10 @@ module.exports = class scheduleController {
       req.body;
     console.log(req.body);
     // Verificar se todos os campos estão preenchidos
-    if (
-      !dateStart ||
-      !dateEnd ||
-      !days ||
-      !user ||
-      !classroom ||
-      !timeStart ||
-      !timeEnd
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
-    }
+    const validationError = validateSchedule(req.body);
+      if (validationError) {
+        return res.status(400).json(validationError);
+      }
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");

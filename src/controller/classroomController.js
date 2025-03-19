@@ -1,13 +1,13 @@
 const connect = require("../db/connect");
+const validateClassroom = require("../services/validateClassroom")
+
 module.exports = class classroomController {
   static async createClassroom(req, res) {
     const { number, description, capacity } = req.body;
 
-    // Verifica se todos os campos estão preenchidos
-    if (!number || !description || !capacity) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+    const validationError = validateClassroom(req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
     }
 
     // Caso todos os campos estejam preenchidos, realiza a inserção na tabela
@@ -81,10 +81,9 @@ module.exports = class classroomController {
     const { number, description, capacity } = req.body;
 
     // Validar campos obrigatórios
-    if (!number || !description || !capacity) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos devem ser preenchidos" });
+    const validationError = validateClassroom(req.body);
+    if (validationError) {
+      return res.status(400).json(validationError);
     }
 
     try {

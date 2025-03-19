@@ -47,13 +47,13 @@ module.exports = class userController {
   }
 
   static async postLogin(req, res) {
-    const { email, password } = req.body;
+    const { cpf, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    if (!cpf || !password) {
+      return res.status(400).json({ error: "CPF e senha são obrigatórios" });
     }
 
-    const query = `SELECT * FROM user WHERE email = '${email}' AND password = '${password}'`;
+    const query = `SELECT * FROM user WHERE cpf = '${cpf}' AND password = '${password}'`;
 
     try {
       connect.query(query, function (err, results) {
