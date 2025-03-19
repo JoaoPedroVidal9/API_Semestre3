@@ -1,6 +1,6 @@
 const connect = require("../db/connect");
 
-module.exports = async function validateCpf(userId = null) {
+module.exports = async function validateCpf(cpf, userId = null) {
   return new Promise((resolve, reject) => {
     const query = "SELECT cpf FROM user WHERE cpf = ?";
     const values = [cpf];

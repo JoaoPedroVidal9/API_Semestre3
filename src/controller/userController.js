@@ -41,7 +41,8 @@ module.exports = class userController {
         return res.status(201).json({ message: "Usuário criado com sucesso" });
       });
     } catch (error) {
-      return res.status(500).json({ error });
+      console.log(error)
+      return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
 
