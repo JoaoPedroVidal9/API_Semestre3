@@ -131,7 +131,7 @@ module.exports = class userController {
 
     const validationError = validateUser(req.body);
     if (validationError) {
-      return res.status(400).json(validationError, "Erro teste");
+      return res.status(400).json(validationError);
     }
 
     try {
