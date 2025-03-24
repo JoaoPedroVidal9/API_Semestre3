@@ -1,4 +1,5 @@
 -- init.sql
+CREATE DATABASE IF NOT EXISTS semestre3;
 USE semestre3
 
 CREATE TABLE `classroom` (
