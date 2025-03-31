@@ -30,9 +30,6 @@ module.exports = class userController {
             if (err.sqlMessage.includes("email")) {
               return res.status(400).json({ error: "Email já cadastrado" });
             }
-            if (err.sqlMessage.includes("cpf")) {
-              return res.status(400).json({ error: "CPF já cadastrado" });
-            }
           } else {
             console.error(err);
             return res.status(500).json({ error: "Erro interno do servidor" });
