@@ -27,12 +27,12 @@ module.exports = class userController {
       connect.query(query, [cpf, password, email, name], (err) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
-            console.log("err.code");
-            console.log(err);
-            console.log("code");
-            console.log(err.code);
-            // Verifica se é um erro de chave primária duplicada
-            return res.status(400).json({ error: "CPF já cadastrado" });
+            if (err.sqlMessage.includes("email")) {
+              return res.status(400).json({ error: "Email já cadastrado" });
+            }
+            if (err.sqlMessage.includes("cpf")) {
+              return res.status(400).json({ error: "CPF já cadastrado" });
+            }
           } else {
             console.error(err);
             return res.status(500).json({ error: "Erro interno do servidor" });
@@ -146,6 +146,9 @@ module.exports = class userController {
         [cpf, email, password, name, userId],
         (err, results) => {
           if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+              return res.status(400).json({ error: "Email já cadastrado" });
+            }
             return res.status(500).json({ error: "Erro interno do servidor" });
           }
           if (results.affectedRows === 0) {

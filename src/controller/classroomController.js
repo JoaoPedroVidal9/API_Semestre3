@@ -20,6 +20,9 @@ module.exports = class classroomController {
     try {
       connect.query(query, function (err) {
         if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            return res.status(400).json({ error: "Sala já cadastrada" });
+          }
           console.log(err);
           res.status(500).json({ error: "Erro ao cadastrar sala" });
           return;
