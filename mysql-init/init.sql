@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `classroom`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `classroom` (
-  `number` char(5) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `number` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `capacity` int NOT NULL,
   PRIMARY KEY (`number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -53,9 +53,9 @@ CREATE TABLE `schedule` (
   `id` int NOT NULL AUTO_INCREMENT,
   `dateStart` date NOT NULL,
   `dateEnd` date NOT NULL,
-  `days` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user` char(11) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `classroom` char(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `days` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `classroom` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `timeStart` time NOT NULL,
   `timeEnd` time NOT NULL,
   PRIMARY KEY (`id`),
@@ -63,7 +63,7 @@ CREATE TABLE `schedule` (
   KEY `classroom` (`classroom`),
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`),
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=175 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,7 +72,7 @@ CREATE TABLE `schedule` (
 
 LOCK TABLES `schedule` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
-INSERT INTO `schedule` VALUES (44,'2025-04-04','2025-05-05','Seg, Ter, Qua','12345680091','A1','08:00:00','12:12:12'),(45,'2025-04-04','2025-05-05','Seg, Ter, Qua','12345680091','A2','08:00:00','12:12:12');
+INSERT INTO `schedule` VALUES (48,'2025-01-09','2025-01-02','Seg','23456789012','B6','10:00:00','13:00:00'),(49,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(50,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(51,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(52,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(53,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(54,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(55,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(56,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(57,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(58,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(59,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(60,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(61,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(62,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(63,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(64,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(65,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(66,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(67,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(68,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(69,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(70,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(71,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(72,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(73,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(74,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(75,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(76,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(77,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(78,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(79,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(80,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(81,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(82,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(83,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(84,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(85,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(86,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(87,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(88,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(89,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(90,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(91,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(92,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(93,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(94,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(95,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(96,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(97,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(98,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(99,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(100,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(101,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(102,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(103,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(104,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(105,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(106,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(107,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(108,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(109,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(110,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(111,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(112,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(113,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(114,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(115,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(116,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(117,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(118,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(119,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(120,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(121,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(122,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(123,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(124,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(125,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(126,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(127,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(128,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(129,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(130,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(131,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(132,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(133,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(134,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(135,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(136,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(137,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(138,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(139,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(140,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(141,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(142,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(143,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(144,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(145,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(146,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(147,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(148,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(149,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(150,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(151,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(152,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(153,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(154,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(155,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(156,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(157,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(158,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(159,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(160,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(161,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(162,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(163,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(164,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(165,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(166,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(167,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(168,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(169,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(170,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(171,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(172,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(173,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00'),(174,'2025-01-12','2025-01-03','Seg, Ter, Qua','23456789012','B6','10:00:00','13:00:00');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,10 +84,10 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `cpf` char(11) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cpf` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`cpf`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -99,7 +99,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('46067858886','1234','eu@eu','Euller Ferreira');
+INSERT INTO `user` VALUES ('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('13131313100','123','email@mail.com','Bencao'),('23456789012','23456789012','1234@1234','Bonini'),('46067858886','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -120,15 +120,43 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`alunods`@`%` FUNCTION `calcula_user_reserva`(user_cpf char(11)) RETURNS int
+CREATE DEFINER=`root`@`localhost` FUNCTION `calcula_user_reserva`(user_cpf char(11)) RETURNS int
     READS SQL DATA
 begin
-declare total int;
-
-select count(*) into total from schedule
-WHERE schedule.user = CONVERT(user_cpf USING utf8mb4) COLLATE utf8mb4_unicode_ci;
-
-return total;
+	declare total int;
+	
+	select count(*) into total from schedule
+	WHERE schedule.user = CONVERT(user_cpf USING utf8mb4) COLLATE utf8mb4_unicode_ci;
+	-- converte o user_cpf para conjunto de caracteres utf8mb4
+	-- utf8mb4_general_ci collate usada para garantir que comparações funcionem corretamente
+	return total;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `cancelar_reserva` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `cancelar_reserva`(
+    in id_schedule int,
+    out resultado varchar(22)
+)
+begin
+    if exists (select 1 from schedule where id = id_schedule) then
+        delete from schedule where id = id_schedule;
+        set resultado = 'sucesso';
+    else
+        set resultado = 'reserva não encontrada';
+    end if;
 end ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -145,4 +173,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-16 13:50:08
+-- Dump completed on 2025-04-23 16:04:23
