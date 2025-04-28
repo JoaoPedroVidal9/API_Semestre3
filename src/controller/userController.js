@@ -1,4 +1,5 @@
 const connect = require("../db/connect");
+const jwt = require("jsonwebtoken")
 const validateUser = require("../services/validateUser");
 const validateCpf = require("../services/validateCpf");
 
@@ -17,14 +18,11 @@ module.exports = class userController {
         return res.status(400).json(cpfError);
       }
 
-      const query = `INSERT INTO user (cpf, password, email, name) VALUES ( 
-        '${cpf}', 
-        '${password}', 
-        '${email}', 
-        '${name}'
-      )`;
+      const query = `INSERT INTO user (cpf, password, email, name) VALUES ( ?, ?, ?, ?)`;
 
-      connect.query(query, [cpf, password, email, name], (err) => {
+      const values = [cpf, password, email, name]
+
+      connect.query(query, values, (err) => {
         if (err) {
           if (err.code === "ER_DUP_ENTRY") {
             if (err.sqlMessage.includes("email")) {
@@ -35,7 +33,18 @@ module.exports = class userController {
             return res.status(500).json({ error: "Erro interno do servidor" });
           }
         }
-        return res.status(201).json({ message: "Usuário criado com sucesso" });
+
+        const token = jwt.sign(
+          {cpf: cpf}, 
+          process.env.SECRET, 
+          {expiresIn: "1h",}
+        )
+
+        return res.status(201).json({
+          message: "Usuário criado com sucesso",
+          token
+        })
+       
       });
     } catch (error) {
       console.log(error)
@@ -50,10 +59,12 @@ module.exports = class userController {
       return res.status(400).json({ error: "CPF e senha são obrigatórios" });
     }
 
-    const query = `SELECT * FROM user WHERE cpf = '${cpf}' AND password = '${password}'`;
+    const query = `SELECT * FROM user WHERE cpf = ? AND password = ?`;
+
+    const values = [cpf, password]
 
     try {
-      connect.query(query, function (err, results) {
+      connect.query(query, values, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
@@ -63,9 +74,23 @@ module.exports = class userController {
           return res.status(401).json({ error: "Credenciais inválidas" });
         }
 
-        return res
-          .status(200)
-          .json({ message: "Login realizado com sucesso", user: results[0] });
+        const user = results[0];
+
+        const token = jwt.sign(
+          {cpf: cpf}, 
+          process.env.SECRET, 
+          {expiresIn: "1h",}
+        )
+        
+        // remove um atributo de um objeto (password removido antes de retornar a requisição)
+        delete user.password
+
+        return res.status(200).json({
+          message: "login bem-sucedido",
+          user,
+          token
+        })
+
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);

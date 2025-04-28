@@ -12,13 +12,23 @@ function isInTimeRange(timeStart, timeRange) {
 
 module.exports = class scheduleController {
   static async createSchedule(req, res) {
-    const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
-      req.body;
+    const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } = req.body;
+
     console.log(req.body);
+    // Converte horário no formato "HH:MM" para minutos
+    const timeToMinutes = (time) => {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    };
+    
     // Verificar se todos os campos estão preenchidos
-      if (!dateStart || !dateEnd || !days || !user || !classroom || !timeStart || !timeEnd ) {
-        return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
-      }
+    if (!dateStart || !dateEnd || !days || !user || !classroom || !timeStart || !timeEnd ) {
+      return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
+    } else if ( dateStart >= dateEnd ) {
+      return res.status(400).json({ error: "Coloque datas validas" });
+    } else if ( timeToMinutes(timeStart) >=  timeToMinutes(timeEnd) ) {
+      return res.status(400).json({ error: "Coloque horários validas", inicio:timeStart, fim:timeEnd, comp:(timeStart>=timeEnd) });
+    }
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");
@@ -116,16 +126,15 @@ module.exports = class scheduleController {
 
   static async getSchedulesByIdClassroomRanges(req, res) {
     const classroomID = req.params.id;
-    const { weekStart, weekEnd } = req.query; // Variavel para armazenar a semana selecionada
-    console.log(weekStart+' '+weekEnd)
+    const { weekStart, weekEnd } = req.body; // Variavel para armazenar a semana selecionada
+    console.log(weekStart+' '+weekEnd) 
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
     const query = `
     SELECT schedule.*, user.name AS userName
     FROM schedule
     JOIN user ON schedule.user = user.cpf
     WHERE classroom = '${classroomID}'
-    AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')
-`;
+    AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')`;
 
 
 
