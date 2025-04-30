@@ -24,10 +24,10 @@ module.exports = class scheduleController {
     // Verificar se todos os campos estão preenchidos
     if (!dateStart || !dateEnd || !days || !user || !classroom || !timeStart || !timeEnd ) {
       return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
-    } else if ( dateStart >= dateEnd ) {
+    } else if ( dateStart > dateEnd ) {
       return res.status(400).json({ error: "Coloque datas validas" });
     } else if ( timeToMinutes(timeStart) >=  timeToMinutes(timeEnd) ) {
-      return res.status(400).json({ error: "Coloque horários validas", inicio:timeStart, fim:timeEnd, comp:(timeStart>=timeEnd) });
+      return res.status(400).json({ error: "Coloque horários validas"});
     }
 
     // Converter o array days em uma string separada por vírgulas
@@ -38,14 +38,14 @@ module.exports = class scheduleController {
     const isWithinTimeRange = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
       const totalMinutes = hours * 60 + minutes;
-      return totalMinutes >= 7.5 * 60 && totalMinutes <= 23 * 60;
+      return (totalMinutes >= 7.5 * 60 && totalMinutes <= 11.5 * 60 ) || (totalMinutes >= 12.5 * 60 && totalMinutes <= 23 * 60);
     };
 
     // Verificar se o tempo de início e término está dentro do intervalo permitido
     if (!isWithinTimeRange(timeStart) || !isWithinTimeRange(timeEnd)) {
       return res.status(400).json({
         error:
-          "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 23:00",
+          "A sala de aula só pode ser reservada dentro do intervalo de 7:30 às 11:30 e 12:30 às 23:00",
       });
     }
 
@@ -124,19 +124,96 @@ module.exports = class scheduleController {
     }
   }
 
+  static async getSchedulesByIdClassroomRangesAvailable(req, res) {
+    const classroomID = req.params.id;
+    const { weekStart, weekEnd } = req.body;
+
+    const startDate = new Date(weekStart);
+    const endDate = new Date(weekEnd);
+
+    if (startDate > endDate) {
+      return res.status(400).json({ error: "Coloque datas válidas (início deve ser antes do fim)." });
+    }
+
+    // Calcula a diferença em milissegundos
+    const diffTime = endDate.getTime() - startDate.getTime();
+    // Converte para dias
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (diffDays >= 7) {
+      return res.status(400).json({ error: "Você só pode consultar uma semana por vez (máximo 6 dias de diferença)." });
+    }
+
+  
+    const query = `
+      SELECT schedule.*
+      FROM schedule
+      WHERE classroom = '${classroomID}'
+      AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')
+    `;
+  
+    try {
+      connect.query(query, function (err, results) {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Erro interno do servidor" });
+        }
+  
+        const allTimeRanges = [
+          "07:30 - 09:30",
+          "09:30 - 11:30",
+          "12:30 - 15:30",
+          "15:30 - 17:30",
+          "19:00 - 22:00",
+        ];
+  
+        const available = {
+          Seg: [...allTimeRanges],
+          Ter: [...allTimeRanges],
+          Qua: [...allTimeRanges],
+          Qui: [...allTimeRanges],
+          Sex: [...allTimeRanges],
+          Sab: [...allTimeRanges],
+        };
+  
+        results.forEach((schedule) => {
+          const days = schedule.days.split(", ");
+          allTimeRanges.forEach((timeRange) => {
+            if (isInTimeRange(schedule.timeStart, timeRange)) {
+              days.forEach((day) => {
+                const index = available[day]?.indexOf(timeRange); // acessa a lista de horários daquele dia e procura o índice da faixa de horário que está ocupada.
+                if (index !== -1) { // Se o horário estiver na lista de disponíveis 
+                  // Remove da lista de horários disponíveis se já tiver agendamento
+                  available[day].splice(index, 1);
+                }
+              });
+            }
+          });
+        });
+  
+        return res.status(200).json({ available });
+      });
+    } catch (error) {
+      console.error("Erro ao executar a consulta:", error);
+      return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+  }  
+
   static async getSchedulesByIdClassroomRanges(req, res) {
     const classroomID = req.params.id;
-    const { weekStart, weekEnd } = req.body; // Variavel para armazenar a semana selecionada
-    console.log(weekStart+' '+weekEnd) 
+    const { weekStart, weekEnd } = req.body; // Variavel para armazenar o dia de início e dia de fim  
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
+
+    if ( weekStart > weekEnd) {
+      return res.status(500).json({ error: "Coloque datas validas" });
+    }
+
     const query = `
     SELECT schedule.*, user.name AS userName
     FROM schedule
     JOIN user ON schedule.user = user.cpf
     WHERE classroom = '${classroomID}'
     AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')`;
-
-
 
     try {
       // Executa a consulta
