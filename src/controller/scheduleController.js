@@ -156,7 +156,7 @@ module.exports = class scheduleController {
       connect.query(query, function (err, results) {
         if (err) {
           console.error(err);
-          return res.status(500).json({ error: "Erro interno do servidor" });
+          return res.status(500).json({ error: "Erro interno do servidor"});
         }
   
         const allTimeRanges = [
@@ -205,7 +205,7 @@ module.exports = class scheduleController {
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
 
     if ( weekStart > weekEnd) {
-      return res.status(500).json({ error: "Coloque datas validas" });
+      return res.status(400).json({ error: "Coloque datas validas" });
     }
 
     const query = `
