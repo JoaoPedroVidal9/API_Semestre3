@@ -105,7 +105,7 @@ module.exports = class scheduleController {
             if(err.code === "ER_NO_REFERENCED_ROW_2"){
               return res
               .status(404)
-              .json({ error: "Usuário não encontrado" });
+              .json({ error: "Sala não encontrada" });
             }
             console.log(err);
             return res
@@ -125,8 +125,7 @@ module.exports = class scheduleController {
   }
 
   static async getSchedulesByIdClassroomRangesAvailable(req, res) {
-    const classroomID = req.params.id;
-    const { weekStart, weekEnd } = req.body;
+    const { weekStart, weekEnd, classroomID} = req.body;
 
     const startDate = new Date(weekStart);
     const endDate = new Date(weekEnd);
@@ -140,7 +139,7 @@ module.exports = class scheduleController {
     // Converte para dias
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-    if (diffDays >= 7) {
+    if (diffDays != 6) {
       return res.status(400).json({ error: "Você só pode consultar uma semana por vez (máximo 6 dias de diferença)." });
     }
 
@@ -192,6 +191,7 @@ module.exports = class scheduleController {
         });
   
         return res.status(200).json({ available });
+        
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
