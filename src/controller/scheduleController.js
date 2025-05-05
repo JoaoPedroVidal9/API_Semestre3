@@ -154,7 +154,7 @@ module.exports = class scheduleController {
     const diffTime = endDate.getTime() - startDate.getTime();
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-    if (diffDays != 6) {
+    if (diffDays != 7) {
       return res
         .status(400)
         .json({
