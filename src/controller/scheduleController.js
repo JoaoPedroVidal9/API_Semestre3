@@ -13,7 +13,7 @@ function isInTimeRange(timeStart, timeRange) {
 module.exports = class scheduleController {
   static async createSchedule(req, res) {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } = req.body;
-
+    console.log(dateStart, dateEnd, days, user, classroom, timeStart, timeEnd)
     // Converte horário no formato "HH:MM" para minutos
     const timeToMinutes = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
@@ -115,6 +115,7 @@ module.exports = class scheduleController {
             if (err.code === "ER_NO_REFERENCED_ROW_2") {
               return res.status(404).json({ error: "Sala não encontrada" });
             }
+            console.log(err)
             return res
               .status(500)
               .json({ error: "Erro ao cadastrar agendamento" });
