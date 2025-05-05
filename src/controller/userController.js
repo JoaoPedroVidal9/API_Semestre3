@@ -42,7 +42,8 @@ module.exports = class userController {
 
         return res.status(201).json({
           message: "Usuário criado com sucesso",
-          token
+          token,
+          
         })
        
       });

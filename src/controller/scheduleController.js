@@ -1,5 +1,5 @@
 const connect = require("../db/connect");
-const splitDays = require("../services/splitDays")
+const splitDays = require("../services/splitDays");
 
 // Verificar se o horário de início de um agendamento está dentro de um intervalo de tempo
 function isInTimeRange(timeStart, timeRange) {
@@ -14,31 +14,42 @@ module.exports = class scheduleController {
   static async createSchedule(req, res) {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } = req.body;
 
-    console.log(req.body);
     // Converte horário no formato "HH:MM" para minutos
     const timeToMinutes = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
       return hours * 60 + minutes;
     };
-    
+
     // Verificar se todos os campos estão preenchidos
-    if (!dateStart || !dateEnd || !days || !user || !classroom || !timeStart || !timeEnd ) {
-      return res.status(400).json({ error: "Todos os campos devem ser preenchidos" });
-    } else if ( dateStart > dateEnd ) {
+    if (
+      !dateStart ||
+      !dateEnd ||
+      !days ||
+      !user ||
+      !classroom ||
+      !timeStart ||
+      !timeEnd
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Todos os campos devem ser preenchidos" });
+    } else if (dateStart > dateEnd) {
       return res.status(400).json({ error: "Coloque datas validas" });
-    } else if ( timeToMinutes(timeStart) >=  timeToMinutes(timeEnd) ) {
-      return res.status(400).json({ error: "Coloque horários validas"});
+    } else if (timeToMinutes(timeStart) >= timeToMinutes(timeEnd)) {
+      return res.status(400).json({ error: "Coloque horários validas" });
     }
 
     // Converter o array days em uma string separada por vírgulas
     const daysString = days.map((day) => `${day}`).join(", ");
-    console.log(daysString);
 
     // Verificar se o tempo está dentro do intervalo permitido
     const isWithinTimeRange = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
       const totalMinutes = hours * 60 + minutes;
-      return (totalMinutes >= 7.5 * 60 && totalMinutes <= 11.5 * 60 ) || (totalMinutes >= 12.5 * 60 && totalMinutes <= 23 * 60);
+      return (
+        (totalMinutes >= 7.5 * 60 && totalMinutes <= 11.5 * 60) ||
+        (totalMinutes >= 12.5 * 60 && totalMinutes <= 23 * 60)
+      );
     };
 
     // Verificar se o tempo de início e término está dentro do intervalo permitido
@@ -71,7 +82,6 @@ module.exports = class scheduleController {
 
       connect.query(overlapQuery, function (err, results) {
         if (err) {
-          console.log(err);
           return res
             .status(500)
             .json({ error: "Erro ao verificar agendamento existente" });
@@ -102,17 +112,13 @@ module.exports = class scheduleController {
         // Executa a consulta de inserção
         connect.query(insertQuery, function (err) {
           if (err) {
-            if(err.code === "ER_NO_REFERENCED_ROW_2"){
-              return res
-              .status(404)
-              .json({ error: "Sala não encontrada" });
+            if (err.code === "ER_NO_REFERENCED_ROW_2") {
+              return res.status(404).json({ error: "Sala não encontrada" });
             }
-            console.log(err);
             return res
               .status(500)
               .json({ error: "Erro ao cadastrar agendamento" });
           }
-          console.log("Agendamento cadastrado com sucesso");
           return res
             .status(201)
             .json({ message: "Agendamento cadastrado com sucesso" });
@@ -125,86 +131,128 @@ module.exports = class scheduleController {
   }
 
   static async getSchedulesByIdClassroomRangesAvailable(req, res) {
-    const { weekStart, weekEnd, classroomID} = req.body;
+    const { weekStart, weekEnd, classroomID } = req.body;
+
+    if (!weekStart || !weekEnd || !classroomID) {
+      return res
+        .status(400)
+        .json({ error: "Todos os campos devem ser preenchidos" });
+    }
 
     const startDate = new Date(weekStart);
     const endDate = new Date(weekEnd);
 
     if (startDate > endDate) {
-      return res.status(400).json({ error: "Coloque datas válidas (início deve ser antes do fim)." });
+      return res
+        .status(400)
+        .json({
+          error: "Coloque datas válidas (início deve ser antes do fim).",
+        });
     }
 
-    // Calcula a diferença em milissegundos
     const diffTime = endDate.getTime() - startDate.getTime();
-    // Converte para dias
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
     if (diffDays != 6) {
-      return res.status(400).json({ error: "Você só pode consultar uma semana por vez (máximo 6 dias de diferença)." });
+      return res
+        .status(400)
+        .json({
+          error:
+            "Você só pode consultar uma semana por vez (máximo 6 dias de diferença).",
+        });
     }
 
-  
-    const query = `
-      SELECT schedule.*
-      FROM schedule
-      WHERE classroom = '${classroomID}'
-      AND (dateStart <= '${weekEnd}' AND dateEnd >= '${weekStart}')
-    `;
-  
     try {
-      connect.query(query, function (err, results) {
+      const classroomQuery = `SELECT 1 FROM classroom WHERE number = ?`;
+      connect.query(classroomQuery, [classroomID], function (err, results) {
         if (err) {
           console.error(err);
-          return res.status(500).json({ error: "Erro interno do servidor"});
+          return res
+            .status(500)
+            .json({ error: "Erro ao verificar a sala no banco de dados" });
         }
-  
-        const allTimeRanges = [
-          "07:30 - 09:30",
-          "09:30 - 11:30",
-          "12:30 - 15:30",
-          "15:30 - 17:30",
-          "19:00 - 22:00",
-        ];
-  
-        const available = {
-          Seg: [...allTimeRanges],
-          Ter: [...allTimeRanges],
-          Qua: [...allTimeRanges],
-          Qui: [...allTimeRanges],
-          Sex: [...allTimeRanges],
-          Sab: [...allTimeRanges],
-        };
-  
-        results.forEach((schedule) => {
-          const days = schedule.days.split(", ");
-          allTimeRanges.forEach((timeRange) => {
-            if (isInTimeRange(schedule.timeStart, timeRange)) {
-              days.forEach((day) => {
-                const index = available[day]?.indexOf(timeRange); // acessa a lista de horários daquele dia e procura o índice da faixa de horário que está ocupada.
-                if (index !== -1) { // Se o horário estiver na lista de disponíveis 
-                  // Remove da lista de horários disponíveis se já tiver agendamento
-                  available[day].splice(index, 1);
+
+        if (results.length === 0) {
+          return res
+            .status(404)
+            .json({ error: "Sala não encontrada no banco de dados" });
+        }
+
+        // Consulta os agendamentos da sala
+        const scheduleQuery = `
+          SELECT schedule.*
+          FROM schedule
+          WHERE classroom = ?
+          AND (dateStart <= ? AND dateEnd >= ?)
+        `;
+
+        connect.query(scheduleQuery, [classroomID, weekEnd, weekStart], function (err, results) {
+            if (err) {
+              console.error(err);
+              return res
+                .status(500)
+                .json({ error: "Erro interno do servidor" });
+            }
+
+            const allTimeRanges = [
+              "07:30 - 09:30",
+              "09:30 - 11:30",
+              "12:30 - 15:30",
+              "15:30 - 17:30",
+              "19:00 - 22:00",
+            ];
+
+            const available = {
+              Seg: [...allTimeRanges],
+              Ter: [...allTimeRanges],
+              Qua: [...allTimeRanges],
+              Qui: [...allTimeRanges],
+              Sex: [...allTimeRanges],
+              Sab: [...allTimeRanges],
+            };
+
+            results.forEach((schedule) => {
+              // Separa os dias do agendamento (ex: "Seg, Qua" → ["Seg", "Qua"])
+              const days = schedule.days.split(", ");
+              
+              // Percorre todas as faixas de horários padrão
+              allTimeRanges.forEach((timeRange) => {
+                // Verifica se o horário de início do agendamento cai dentro da determinada faixa de horário
+                if (isInTimeRange(schedule.timeStart, timeRange)) {
+                  // Para cada dia do agendamento
+                  days.forEach((day) => {
+                    // Verifica se a faixa de horário ainda está disponível naquele dia
+                    const index = available[day].indexOf(timeRange);
+
+                    // Se estiver disponível, remove da lista de horários livres
+                    if (index !== -1) {
+                      available[day].splice(index, 1); // Remove 1 item no índice encontrado
+                    }
+                  });
                 }
               });
-            }
-          });
-        });
-  
-        return res.status(200).json({ available });
-        
+            });
+
+            return res.status(200).json({ available });
+          }
+        );
       });
     } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }  
+  }
 
   static async getSchedulesByIdClassroomRanges(req, res) {
-    const classroomID = req.params.id;
-    const { weekStart, weekEnd } = req.body; // Variavel para armazenar o dia de início e dia de fim  
+    const { weekStart, weekEnd, classroomID } = req.body; // Variavel para armazenar o dia de início e dia de fim
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
 
-    if ( weekStart > weekEnd) {
+    if (!weekStart || !weekEnd || !classroomID) {
+      return res
+        .status(400)
+        .json({ error: "Todos os campos devem ser preenchidos" });
+    }
+
+    if (weekStart > weekEnd) {
       return res.status(400).json({ error: "Coloque datas validas" });
     }
 
@@ -303,7 +351,6 @@ module.exports = class scheduleController {
         return res.status(200).json({ schedulesByDayAndTimeRange });
       });
     } catch (error) {
-      console.error("Erro ao executar a consulta:", error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
