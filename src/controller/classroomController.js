@@ -23,11 +23,10 @@ module.exports = class classroomController {
           if (err.code === "ER_DUP_ENTRY") {
             return res.status(400).json({ error: "Sala já cadastrada" });
           }
-          console.log(err);
+          console.error(err);
           res.status(500).json({ error: "Erro ao cadastrar sala" });
           return;
         }
-        console.log("Sala cadastrada com sucesso");
         res.status(201).json({ message: "Sala cadastrada com sucesso" });
       });
     } catch (error) {
@@ -44,7 +43,6 @@ module.exports = class classroomController {
           console.error("Erro ao obter salas:", err);
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
-        console.log("Salas obtidas com sucesso");
         res.status(200).json({ classrooms: result });
       });
     } catch (error) {
@@ -67,8 +65,6 @@ module.exports = class classroomController {
         if (result.length === 0) {
           return res.status(404).json({ error: "Sala não encontrada" });
         }
-
-        console.log("Sala obtida com sucesso");
         res.status(200).json({
           message: "Obtendo a sala com ID: " + classroomId,
           classroom: result[0],
@@ -118,8 +114,6 @@ module.exports = class classroomController {
                 .status(500)
                 .json({ error: "Erro interno do servidor" });
             }
-
-            console.log("Sala atualizada com sucesso");
             res.status(200).json({ message: "Sala atualizada com sucesso" });
           }
         );
@@ -168,7 +162,6 @@ module.exports = class classroomController {
                 return res.status(404).json({ error: "Sala não encontrada" });
               }
 
-              console.log("Sala deletada com sucesso");
               res.status(200).json({ message: "Sala excluída com sucesso" });
             });
           }

@@ -13,7 +13,7 @@ function isInTimeRange(timeStart, timeRange) {
 module.exports = class scheduleController {
   static async createSchedule(req, res) {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } = req.body;
-    console.log(dateStart, dateEnd, days, user, classroom, timeStart, timeEnd)
+    
     // Converte horário no formato "HH:MM" para minutos
     const timeToMinutes = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
@@ -154,7 +154,7 @@ module.exports = class scheduleController {
     const diffTime = endDate.getTime() - startDate.getTime();
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
-    if (diffDays != 7) {
+    if (diffDays != 6) {
       return res
         .status(400)
         .json({
