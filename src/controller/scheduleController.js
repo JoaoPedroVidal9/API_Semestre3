@@ -115,7 +115,7 @@ module.exports = class scheduleController {
             if (err.code === "ER_NO_REFERENCED_ROW_2") {
               return res.status(404).json({ error: "Sala não encontrada" });
             }
-            console.log(err)
+            console.error(err)
             return res
               .status(500)
               .json({ error: "Erro ao cadastrar agendamento" });
