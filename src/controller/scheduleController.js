@@ -411,7 +411,7 @@ module.exports = class scheduleController {
 
   static async deleteSchedule(req, res) {
     const scheduleId = req.params.id;
-    const query = `DELETE FROM schedule WHERE id = ?`;
+    const query = `call cancelar_reserva(?, @msg);`;
     const values = [scheduleId];
 
     try {
@@ -421,7 +421,7 @@ module.exports = class scheduleController {
           return res.status(500).json({ error: "Erro interno do servidor" });
         }
 
-        if (results.affectedRows === 0) {
+        if (results.message === "reserva não encontrada") {
           return res.status(404).json({ error: "Agendamento não encontrado" });
         }
 

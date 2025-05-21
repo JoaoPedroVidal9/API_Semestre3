@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    command: /bin/sh -c "npm install && npm start"
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/usr/app
+    depends_on:
+      - banco
+  banco:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: semestre3
+    ports:
+      - "3307:3307"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+volumes:
+  db_data:

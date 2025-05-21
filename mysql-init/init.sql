@@ -1,5 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `semestre3` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `semestre3`;
+set @msg = '';
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
 -- Host: localhost    Database: semestre3
