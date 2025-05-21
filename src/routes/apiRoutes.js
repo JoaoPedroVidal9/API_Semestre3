@@ -23,7 +23,8 @@ router.delete("/classroom/:number", classroomController.deleteClassroom);
 
 //Schedule
 router.post("/schedule/",  scheduleController.createSchedule);
-router.get("/schedule/", scheduleController.getAllSchedules);
+router.get("/schedule/", scheduleController.getAllSchedules);getSchedulesByIdUser
+router.get("/schedule/user", scheduleController.getSchedulesByIdUser);
 router.get("/schedule/:id", scheduleController.getSchedulesByIdClassroom);
 router.post("/schedule/ranges/", scheduleController.getSchedulesByIdClassroomRanges);
 router.post("/schedule/available/", scheduleController.getSchedulesByIdClassroomRangesAvailable )
