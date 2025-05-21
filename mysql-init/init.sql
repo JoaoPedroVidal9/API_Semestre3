@@ -158,6 +158,7 @@ begin
     else
         set resultado = 'reserva não encontrada';
     end if;
+    select @msg as mensagem;
 end ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -174,4 +175,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-04-30 15:22:07
+-- Dump completed on 2025-05-21 16:14:28
