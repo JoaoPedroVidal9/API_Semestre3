@@ -19,7 +19,7 @@ class AppController {
 
     routes() {
       const apiRoutes= require('./routes/apiRoutes');
-      this.express.use('/api/reservas/v1/', apiRoutes);
+      this.express.use('/api/reservas/v3/', apiRoutes); // http://10.89.240.75:5000/api/reservas/v3
     }
   }
 

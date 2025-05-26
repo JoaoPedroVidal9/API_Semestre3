@@ -132,20 +132,26 @@ module.exports = class scheduleController {
   }
 
   static async getSchedulesByIdUser(req, res) {
-    const {idUser} = req.body;
+    const idUser = req.params.id;
 
     const query = `select *, calcula_user_reserva(?) as contagem from schedule where user = ?;`
     const values = [idUser, idUser];
     try{
-      connect.query(query,function (err, results) {
+      connect.query(query, values, function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({error:"Erro interno do servidor"});
         }
-        if (results.lenght === 0) {
-          return res.status(400).json({error:"Nenhuma reserva para este usuário"})
+        let contagem = 0;
+        try{
+          if (results.lenght < 1) {
+            return res.status(404).json({error:"Nenhuma reserva para este usuário"});
+          }
+        contagem = results[0].contagem;
+        console.log(contagem);}
+        catch(err){
+          return res.status(404).json({error:"Nenhuma reserva para este usuário"})
         }
-        const contagem = results[0].contagem;
         const resultados = results;
         return res.status(200).json({message:`Reservas recuperadas com sucesso`,results:resultados, contagem:contagem })
       })
