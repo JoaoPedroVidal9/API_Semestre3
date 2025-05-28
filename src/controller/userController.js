@@ -18,9 +18,9 @@ module.exports = class userController {
         return res.status(400).json(cpfError);
       }
 
-      const query = `INSERT INTO user (cpf, password, email, name) VALUES ( ?, ?, ?, ?)`;
+      const query = `call cadastro_user('?', '?', '?', '?');`;
 
-      const values = [cpf, password, email, name]
+      const values = [cpf, name, email, password]
 
       connect.query(query, values, (err) => {
         if (err) {
@@ -172,7 +172,10 @@ module.exports = class userController {
             if (err.code === "ER_DUP_ENTRY") {
               return res.status(400).json({ error: "Email já cadastrado" });
             }
-            return res.status(500).json({ error: "Erro interno do servidor" });
+            if (err.code === "ER_ROW_IS_REFERENCED_2"){
+              return res.status(400).json({error:"Não é possível atualizar o CPF do usuário, pois ele tem reservas registradas."});
+            }
+            return res.status(500).json({ error: "Erro interno do servidor: "+err.code });
           }
           if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Usuário não encontrado" });
@@ -183,18 +186,16 @@ module.exports = class userController {
         }
       );
     } catch (error) {
-      res.status(500).json({ error: "Erro interno do servidor" });
-      return res.status(500).json({ error });
+      return res.status(500).json({ error: "Erro interno do servidor: " + error  });
     }
   }
 
   static async deleteUser(req, res) {
     const userId = req.params.id;
-    const query = `DELETE FROM user WHERE cpf = ?`;
-    const values = [userId];
+    const query = `CALL deletar_user('?', @resultado)`;
 
     try {
-      connect.query(query, values, function (err, results) {
+      connect.query(query, [userId], function (err, results) {
         if (err) {
           console.error(err);
           return res.status(500).json({ error: "Erro interno do servidor" });
