@@ -96,7 +96,7 @@ module.exports = class scheduleController {
         }
 
         // Caso contrário, prossegue com a inserção na tabela
-        const insertQuery = `CALL cadastro_schedule('?', '?', '?', '?', '?', '?', '?');`
+        const insertQuery = `CALL cadastro_schedule(?, ?, ?, ?, ?, ?, ?);`
         const values = [dateStart, dateEnd, timeStart, timeEnd, daysString, user, classroom];
 
         // Executa a consulta de inserção

@@ -18,7 +18,7 @@ module.exports = class userController {
         return res.status(400).json(cpfError);
       }
 
-      const query = `call cadastro_user('?', '?', '?', '?');`;
+      const query = `call cadastro_user(?, ?, ?, ?);`;
 
       const values = [cpf, name, email, password]
 
@@ -192,7 +192,7 @@ module.exports = class userController {
 
   static async deleteUser(req, res) {
     const userId = req.params.id;
-    const query = `CALL deletar_user('?', @resultado)`;
+    const query = `CALL deletar_user(?, @resultado)`;
 
     try {
       connect.query(query, [userId], function (err, results) {

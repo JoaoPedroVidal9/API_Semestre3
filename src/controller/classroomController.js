@@ -12,7 +12,7 @@ module.exports = class classroomController {
 
     // Caso todos os campos estejam preenchidos, realiza a inserção na tabela
 
-    const query = `CALL cadastro_classroom('?', '?', ?);`;
+    const query = `CALL cadastro_classroom(?, ?, ?);`;
     const values = [number, description, capacity];
 
     try {
@@ -147,7 +147,7 @@ module.exports = class classroomController {
               });
           } else {
             // Deletar a sala de aula
-            const deleteQuery = `CALL deletar_classroom('?', @resultado);`
+            const deleteQuery = `CALL deletar_classroom(?, @resultado);`
             connect.query(deleteQuery, [classroomId], function (err, result) {
               if (err) {
                 console.error("Erro ao deletar a sala:", err);
