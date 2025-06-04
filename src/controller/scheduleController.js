@@ -162,8 +162,7 @@ module.exports = class scheduleController {
           if (results.lenght < 1) {
             return res.status(404).json({error:"Nenhuma reserva para este usuário"});
           }
-        contagem = results[0].contagem;
-        console.log(contagem);}
+        contagem = results[0].contagem;}
         catch(err){
           return res.status(404).json({error:"Nenhuma reserva para este usuário"})
         }
