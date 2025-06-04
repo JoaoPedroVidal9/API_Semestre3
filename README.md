@@ -18,26 +18,33 @@ Este repositório fornece a estrutura da API de gerenciamento de reserva de sala
 
    ```sh
    docker-compose up --build
+   ```
 
-3.  Caso não use Docker:
+3. Caso não use Docker:
 
-   3. 1. Instale as dependências:
-      ```sh
-      npm i
+Instale as dependências:
 
-   3. 2. Crie o banco de dados. O modelo do banco de dados está disponível no arquivo mysql-init/init.sql na raiz do projeto. Certifique-se de criar o banco de dados antes de rodar o projeto.
+   ```sh
+   npm i
+   ```
 
-3. Configure a conexão com o banco de dados. Crie o arquivo .env e ajuste as configurações de conexão pelas variáveis de ambiente:
+4. Configure a conexão com o banco de dados. Crie o arquivo .env e ajuste as configurações de conexão pelas variáveis de ambiente:
 
-<!--
-
+```sh
 SECRET= Chave_Secreta
 DB_HOST= banco
 DB_USER= root
 DB_PASSWORD= root
 DB_NAME= semestre3
+```
 
--->
+5. Adendo: Como criar um backup a partir do Docker:
+
+- Abra um Terminal de Comando novo, acesse a pasta em que você deseja guardar o backup e execute o seguinte comando:
+
+   ```sh
+   "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe" -u root -p semestre3 > init.sql
+
 
 ## Rotas da API
 
@@ -61,11 +68,6 @@ DB_NAME= semestre3
 - **GET /schedule/**: Obtém todos os agendamentos.
 - **GET /schedule/:id**: Obtém os agendamentos de uma sala de aula específica pelo ID.
 - **GET /schedule/ranges/:id**: Obtém os agendamentos de uma sala de aula específica em intervalos de tempo.
+- **POST /schedule/ranges**: Obtém os horários agendados para uma sala específica
+- **POST /schedule/available**: Obtém os horários livres de agendamento para uma sala específica.
 - **DELETE /schedule/:id**: Deleta um agendamento.
-
-5. Adendo: Como criar um backup a partir do Docker:
-
-- Abra um Terminal de Comando novo, acesse a pasta em que você deseja guardar o backup e execute o seguinte comando:
-
-   ```sh
-   "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe" -u root -p semestre3 > init.sql
