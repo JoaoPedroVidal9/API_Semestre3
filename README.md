@@ -7,7 +7,7 @@ Este repositório fornece a estrutura da API de gerenciamento de reserva de sala
 - Implantação da api via Docker. 
 - Criar serviços baseados em PROCEDURES, FUCTIONS e TRIGGERS.
 
-## Instalação do Projeto Base
+## Instalação do Projeto
 
 1. Clone o repositório:
    ```sh
