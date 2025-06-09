@@ -6,10 +6,9 @@ const validateUser = require("../services/validateUser");
 const validateCpf = require("../services/validateCpf");
 const oldPasswordValidation = require("../services/oldPasswordValidation");
 
-  async function bolas(corpo, id){
-    const passwordResponse = await oldPasswordValidation(corpo, id);
-    return passwordResponse;
-  }
+async function CheckServiceSenha(corpo, id) {
+  return passwordResponse;
+}
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -168,10 +167,9 @@ module.exports = class userController {
         .status(400)
         .json({ error: "Você não tem permissão de atualizar esta conta" });
     }
-
-    const checkSenha = await bolas(req.body, userId);
-    console.log(checkSenha);
-    if (checkSenha.result === "put_com_senha") {
+    const passwordResponse = await oldPasswordValidation(req.body, userId);
+    console.log(passwordResponse);
+    if (passwordResponse.result === "put_com_senha") {
       const validationError = validateUser(req.body);
       if (validationError) {
         return res.status(400).json(validationError);
@@ -184,7 +182,7 @@ module.exports = class userController {
         }
         const query =
           "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
-        
+
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
         connect.query(
           query,
@@ -207,9 +205,16 @@ module.exports = class userController {
             if (results.affectedRows === 0) {
               return res.status(404).json({ error: "Usuário não encontrado" });
             }
+
+            const token = jwt.sign({ cpf: cpf }, process.env.SECRET, {
+              expiresIn: "1h",
+            });
             return res
               .status(200)
-              .json({ message: "Usuário atualizado com sucesso" });
+              .json({
+                message: "Usuário atualizado com sucesso",
+                token: token,
+              });
           }
         );
       } catch (error) {
@@ -218,7 +223,6 @@ module.exports = class userController {
           .json({ error: "Erro interno do servidor: " + error });
       }
     } else if (passwordResponse.result === "put_sem_senha") {
-
       try {
         const cpfError = await validateCpf(cpf, userId);
         if (cpfError) {
@@ -226,7 +230,9 @@ module.exports = class userController {
         }
         const query =
           "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
-        const oldHashed = bcrypt.hash(oldPassword, SALT_ROUNDS);
+
+        console.log(query, userId);
+        const oldHashed = await bcrypt.hash(oldPassword, SALT_ROUNDS);
         connect.query(
           query,
           [cpf, email, oldHashed, name, userId],
@@ -248,9 +254,17 @@ module.exports = class userController {
             if (results.affectedRows === 0) {
               return res.status(404).json({ error: "Usuário não encontrado" });
             }
+
+            const token = jwt.sign({ cpf: cpf }, process.env.SECRET, {
+              expiresIn: "1h",
+            });
+
             return res
               .status(200)
-              .json({ message: "Usuário atualizado com sucesso" });
+              .json({
+                message: "Usuário atualizado com sucesso",
+                token: token,
+              });
           }
         );
       } catch (error) {
@@ -259,7 +273,7 @@ module.exports = class userController {
           .json({ error: "Erro interno do servidor: " + error });
       }
     } else {
-      return res.status(400).json(passwordResponse.error);
+      return res.status(400).json(passwordResponse);
     }
   }
 
