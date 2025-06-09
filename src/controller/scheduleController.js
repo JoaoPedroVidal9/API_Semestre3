@@ -34,9 +34,9 @@ module.exports = class scheduleController {
         .status(400)
         .json({ error: "Todos os campos devem ser preenchidos" });
     } else if (dateStart > dateEnd) {
-      return res.status(400).json({ error: "Coloque datas validas" });
+      return res.status(400).json({ error: "Coloque datas válidas" });
     } else if (timeToMinutes(timeStart) >= timeToMinutes(timeEnd)) {
-      return res.status(400).json({ error: "Coloque horários validas" });
+      return res.status(400).json({ error: "Coloque horários válidos" });
     }
 
     // Converter o array days em uma string separada por vírgulas
