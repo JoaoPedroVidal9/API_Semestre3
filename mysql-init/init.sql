@@ -107,7 +107,7 @@ CREATE TABLE `schedule` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   KEY `classroom` (`classroom`),
-  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE,
+  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
 ) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -118,29 +118,8 @@ CREATE TABLE `schedule` (
 
 LOCK TABLES `schedule` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
-INSERT INTO `schedule` VALUES (175,'2025-04-03','2025-04-05','Seg','46067858886','A1','09:30:00','11:30:00'),(178,'2025-04-03','2025-04-05','Seg','46067858886','A1','12:50:00','14:30:00'),(179,'2025-04-03','2025-04-05','Seg','46067858886','A2','12:50:00','14:30:00'),(180,'2025-10-25','2025-10-26','Seg','12345678909','B12','13:00:00','14:00:00'),(181,'2025-10-27','2025-10-27','Seg','12345678909','B12','13:00:00','14:00:00');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `create_log_schedule` AFTER DELETE ON `schedule` FOR EACH ROW begin
-	insert into `schedule_log` (
-    id, dateStart, dateEnd, timeStart, timeEnd, days, user, classroom)
-    values (
-    old.id, old.dateStart, old.dateEnd, old.timeStart, old.timeEnd, old.days, old.user, old.classroom);
-end */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `schedule_log`
@@ -181,7 +160,7 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `cpf` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`cpf`),
@@ -195,29 +174,8 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('12345678909','12345678909','bonini@example.com','Bonini'),('12345680091','1234','euler.ferreira19@gmail.com','Euller Silva'),('23456789012','23456789012','1234@1234','Bonini'),('46067858886','1234','eu@eu','Euller Ferreira');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `create_log_user` AFTER DELETE ON `user` FOR EACH ROW begin
-	insert into `user_log` (
-    cpf, email, password, name)
-    values (
-    old.cpf, old.email, old.password, old.name);
-end */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `user_log`
@@ -228,7 +186,7 @@ DROP TABLE IF EXISTS `user_log`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_log` (
   `cpf` char(11) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `datetimeDelete` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -303,6 +261,38 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `hashed_usuario_igual` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+delimiter //
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `hashed_usuario_igual`(user_cpf char(11), senha_fornecida varchar(255)) RETURNS tinyint(1)
+    READS SQL DATA
+begin
+	DECLARE senha_armazenada VARCHAR(255);
+    DECLARE resultado BOOLEAN DEFAULT FALSE;
+    
+	select `password` into senha_armazenada from user
+	WHERE cpf = user_cpf;
+    
+    if (senha_fornecida = senha_armazenada) then
+        set resultado = TRUE;
+	end if;
+	
+    return resultado;
+end; //
+
+delimiter ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `cadastro_classroom` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -372,7 +362,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `cadastro_user`(
 in cpfp char(11),
     in namep varchar(255),
     in emailp varchar(255),
-    in passwordp varchar(50))
+    in passwordp varchar(255))
 begin
 insert into user (
 cpf, name, email, password)
@@ -478,4 +468,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-04 10:39:23
+-- Dump completed on 2025-06-09 11:14:21

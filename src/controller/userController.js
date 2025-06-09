@@ -1,7 +1,15 @@
 const connect = require("../db/connect");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 const validateUser = require("../services/validateUser");
 const validateCpf = require("../services/validateCpf");
+const oldPasswordValidation = require("../services/oldPasswordValidation");
+
+  async function bolas(corpo, id){
+    const passwordResponse = await oldPasswordValidation(corpo, id);
+    return passwordResponse;
+  }
 
 module.exports = class userController {
   static async createUser(req, res) {
@@ -18,9 +26,11 @@ module.exports = class userController {
         return res.status(400).json(cpfError);
       }
 
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
       const query = `call cadastro_user(?, ?, ?, ?);`;
 
-      const values = [cpf, name, email, password]
+      const values = [cpf, name, email, hashedPassword];
 
       connect.query(query, values, (err) => {
         if (err) {
@@ -34,21 +44,17 @@ module.exports = class userController {
           }
         }
 
-        const token = jwt.sign(
-          {cpf: cpf}, 
-          process.env.SECRET, 
-          {expiresIn: "1h",}
-        )
+        const token = jwt.sign({ cpf: cpf }, process.env.SECRET, {
+          expiresIn: "1h",
+        });
 
         return res.status(201).json({
           message: "Usuário criado com sucesso",
           token,
-          
-        })
-       
+        });
       });
     } catch (error) {
-      console.error(error)
+      console.error(error);
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
@@ -60,9 +66,9 @@ module.exports = class userController {
       return res.status(400).json({ error: "CPF e senha são obrigatórios" });
     }
 
-    const query = `SELECT * FROM user WHERE cpf = ? AND password = ?`;
+    const query = `SELECT * FROM user WHERE cpf = ?`;
 
-    const values = [cpf, password]
+    const values = [cpf];
 
     try {
       connect.query(query, values, function (err, results) {
@@ -77,21 +83,23 @@ module.exports = class userController {
 
         const user = results[0];
 
-        const token = jwt.sign(
-          {cpf: cpf}, 
-          process.env.SECRET, 
-          {expiresIn: "1h",}
-        )
-        
+        const passwordOK = bcrypt.compareSync(password, user.password);
+        if (!passwordOK) {
+          return res.status(403).json({ error: "Senha Incorreta" });
+        }
+
+        const token = jwt.sign({ cpf: cpf }, process.env.SECRET, {
+          expiresIn: "1h",
+        });
+
         // remove um atributo de um objeto (password removido antes de retornar a requisição)
-        delete user.password
+        delete user.password;
 
         return res.status(200).json({
           message: "login bem-sucedido",
           user,
-          token
-        })
-
+          token,
+        });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
@@ -135,12 +143,12 @@ module.exports = class userController {
           return res.status(404).json({ error: "Usuário não encontrado" });
         }
 
-        return res
-          .status(200)
-          .json({
-            message: "Obtendo usuário com ID: " + userId,
-            user: results[0],
-          });
+        delete results[0].password;
+
+        return res.status(200).json({
+          message: "Obtendo usuário com ID: " + userId,
+          user: results[0],
+        });
       });
     } catch (error) {
       console.error("Erro ao executar a consulta:", error);
@@ -150,48 +158,124 @@ module.exports = class userController {
 
   static async updateUser(req, res) {
     const userId = req.params.id;
-    const { cpf, email, password, name } = req.body;
+    const idCorreto = req.userId;
+    const { cpf, email, password, oldPassword, name } = req.body;
 
-    const validationError = validateUser(req.body);
-    if (validationError) {
-      return res.status(400).json(validationError);
+    console.log(idCorreto);
+    console.log(userId);
+    if (idCorreto !== userId) {
+      return res
+        .status(400)
+        .json({ error: "Você não tem permissão de atualizar esta conta" });
     }
 
-    try {
-      const cpfError = await validateCpf(cpf, userId);
-      if (cpfError) {
-        return res.status(400).json(cpfError);
+    const checkSenha = await bolas(req.body, userId);
+    console.log(checkSenha);
+    if (checkSenha.result === "put_com_senha") {
+      const validationError = validateUser(req.body);
+      if (validationError) {
+        return res.status(400).json(validationError);
       }
-      const query =
-        "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
-      connect.query(
-        query,
-        [cpf, email, password, name, userId],
-        (err, results) => {
-          if (err) {
-            if (err.code === "ER_DUP_ENTRY") {
-              return res.status(400).json({ error: "Email já cadastrado" });
-            }
-            if (err.code === "ER_ROW_IS_REFERENCED_2"){
-              return res.status(400).json({error:"Não é possível atualizar o CPF do usuário, pois ele tem reservas registradas."});
-            }
-            return res.status(500).json({ error: "Erro interno do servidor: "+err.code });
-          }
-          if (results.affectedRows === 0) {
-            return res.status(404).json({ error: "Usuário não encontrado" });
-          }
-          return res
-            .status(200)
-            .json({ message: "Usuário atualizado com sucesso" });
+
+      try {
+        const cpfError = await validateCpf(cpf, userId);
+        if (cpfError) {
+          return res.status(400).json(cpfError);
         }
-      );
-    } catch (error) {
-      return res.status(500).json({ error: "Erro interno do servidor: " + error  });
+        const query =
+          "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
+        
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        connect.query(
+          query,
+          [cpf, email, hashedPassword, name, userId],
+          (err, results) => {
+            if (err) {
+              if (err.code === "ER_DUP_ENTRY") {
+                return res.status(400).json({ error: "Dados já cadastrados" });
+              }
+              if (err.code === "ER_ROW_IS_REFERENCED_2") {
+                return res.status(400).json({
+                  error:
+                    "Não é possível atualizar o CPF do usuário, pois ele tem reservas registradas.",
+                });
+              }
+              return res
+                .status(500)
+                .json({ error: "Erro interno do servidor: " + err.code });
+            }
+            if (results.affectedRows === 0) {
+              return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+            return res
+              .status(200)
+              .json({ message: "Usuário atualizado com sucesso" });
+          }
+        );
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ error: "Erro interno do servidor: " + error });
+      }
+    } else if (passwordResponse.result === "put_sem_senha") {
+
+      try {
+        const cpfError = await validateCpf(cpf, userId);
+        if (cpfError) {
+          return res.status(400).json(cpfError);
+        }
+        const query =
+          "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
+        const oldHashed = bcrypt.hash(oldPassword, SALT_ROUNDS);
+        connect.query(
+          query,
+          [cpf, email, oldHashed, name, userId],
+          (err, results) => {
+            if (err) {
+              if (err.code === "ER_DUP_ENTRY") {
+                return res.status(400).json({ error: "Dados já cadastrados" });
+              }
+              if (err.code === "ER_ROW_IS_REFERENCED_2") {
+                return res.status(400).json({
+                  error:
+                    "Não é possível atualizar o CPF do usuário, pois ele tem reservas registradas.",
+                });
+              }
+              return res
+                .status(500)
+                .json({ error: "Erro interno do servidor: " + err.code });
+            }
+            if (results.affectedRows === 0) {
+              return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+            return res
+              .status(200)
+              .json({ message: "Usuário atualizado com sucesso" });
+          }
+        );
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ error: "Erro interno do servidor: " + error });
+      }
+    } else {
+      return res.status(400).json(passwordResponse.error);
     }
   }
 
   static async deleteUser(req, res) {
     const userId = req.params.id;
+    const idCorreto = req.userId;
+
+    console.log(idCorreto);
+    console.log(userId);
+
+    if (idCorreto !== userId) {
+      return res
+        .status(400)
+        .json({ error: "Você não tem permissão de apagar esta conta" });
+    }
+
     const query = `CALL deletar_user(?, @resultado)`;
 
     try {
