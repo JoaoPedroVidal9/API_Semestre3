@@ -160,7 +160,7 @@ module.exports = class classroomController {
                 return res.status(404).json({ error: "Sala não encontrada" });
               }
 
-              res.status(200).json({ message: "Sala excluída com sucesso" });
+              return res.status(200).json({ message: "Sala excluída com sucesso" });
             });
           }
         }

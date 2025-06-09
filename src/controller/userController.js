@@ -95,7 +95,7 @@ module.exports = class userController {
         delete user.password;
 
         return res.status(200).json({
-          message: "login bem-sucedido",
+          message: "Login bem-sucedido",
           user,
           token,
         });
