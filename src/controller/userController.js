@@ -160,15 +160,12 @@ module.exports = class userController {
     const idCorreto = req.userId;
     const { cpf, email, password, oldPassword, name } = req.body;
 
-    console.log(idCorreto);
-    console.log(userId);
     if (idCorreto !== userId) {
       return res
         .status(400)
         .json({ error: "Você não tem permissão de atualizar esta conta" });
     }
     const passwordResponse = await oldPasswordValidation(req.body, userId);
-    console.log(passwordResponse);
     if (passwordResponse.result === "put_com_senha") {
       const validationError = validateUser(req.body);
       if (validationError) {
@@ -231,7 +228,6 @@ module.exports = class userController {
         const query =
           "UPDATE user SET cpf = ?, email = ?, password = ?, name = ? WHERE cpf = ?";
 
-        console.log(query, userId);
         const oldHashed = await bcrypt.hash(oldPassword, SALT_ROUNDS);
         connect.query(
           query,
@@ -281,8 +277,6 @@ module.exports = class userController {
     const userId = req.params.id;
     const idCorreto = req.userId;
 
-    console.log(idCorreto);
-    console.log(userId);
 
     if (idCorreto !== userId) {
       return res

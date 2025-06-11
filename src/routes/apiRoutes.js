@@ -26,8 +26,9 @@ router.post("/schedule/",  scheduleController.createSchedule);
 router.get("/schedule/", scheduleController.getAllSchedules);
 router.get("/schedule/user/:id", scheduleController.getSchedulesByIdUser);
 router.get("/schedule/:id", scheduleController.getSchedulesByIdClassroom);
-router.post("/schedule/ranges/", scheduleController.getSchedulesByIdClassroomRanges);
-router.post("/schedule/available/", scheduleController.getSchedulesByIdClassroomRangesAvailable )
+router.post("/schedule/ranges/", scheduleController.postSchedulesByIdClassroomRanges);
+router.post("/schedule/available/", scheduleController.postSchedulesByIdClassroomRangesAvailable);
+router.post("/schedule/days/", scheduleController.postDaysForSchedules)
 router.delete("/schedule/:id", scheduleController.deleteSchedule);
 
 module.exports = router;

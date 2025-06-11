@@ -107,7 +107,7 @@ CREATE TABLE `schedule` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   KEY `classroom` (`classroom`),
-  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`cpf`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`classroom`) REFERENCES `classroom` (`number`)
 ) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -174,6 +174,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES ('12345678909','$2b$10$4O40bg8k4y6HupQR1X0B.e8DfmgdxrBatPp0VCavd6jiV7WeVhT.q','a','a');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,7 +262,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP FUNCTION IF EXISTS `hashed_usuario_igual` */;
+/*!50003 DROP FUNCTION IF EXISTS `diferenca_datas` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -270,25 +271,16 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-delimiter //
-
-CREATE DEFINER=`root`@`localhost` FUNCTION `hashed_usuario_igual`(user_cpf char(11), senha_fornecida varchar(255)) RETURNS tinyint(1)
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `diferenca_datas`(date1 date, date2 date) RETURNS int
     READS SQL DATA
 begin
-	DECLARE senha_armazenada VARCHAR(255);
-    DECLARE resultado BOOLEAN DEFAULT FALSE;
-    
-	select `password` into senha_armazenada from user
-	WHERE cpf = user_cpf;
-    
-    if (senha_fornecida = senha_armazenada) then
-        set resultado = TRUE;
-	end if;
-	
-    return resultado;
-end; //
+	declare result int;
 
-delimiter ;
+	set result = timestampdiff(day, date1, date2);
+	return result;
+end ;;
+DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -468,4 +460,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-09 11:14:21
+-- Dump completed on 2025-06-11  8:50:38

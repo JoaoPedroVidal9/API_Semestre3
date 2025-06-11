@@ -5,7 +5,6 @@ module.exports = async function oldPasswordValidation(
   { password, password2, oldPassword },
   userId
 ) {
-  console.log(password, ", ", password2, ", ", oldPassword, ",", userId);
 
   if (!oldPassword) {
     return { error: "Preencha o campo da senha atual" };

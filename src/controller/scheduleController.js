@@ -12,8 +12,9 @@ function isInTimeRange(timeStart, timeRange) {
 
 module.exports = class scheduleController {
   static async createSchedule(req, res) {
-    const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } = req.body;
-    
+    const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
+      req.body;
+
     // Converte horário no formato "HH:MM" para minutos
     const timeToMinutes = (time) => {
       const [hours, minutes] = time.split(":").map(Number);
@@ -96,16 +97,24 @@ module.exports = class scheduleController {
         }
 
         // Caso contrário, prossegue com a inserção na tabela
-        const insertQuery = `CALL cadastro_schedule(?, ?, ?, ?, ?, ?, ?);`
-        const values = [dateStart, dateEnd, timeStart, timeEnd, daysString, user, classroom];
+        const insertQuery = `CALL cadastro_schedule(?, ?, ?, ?, ?, ?, ?);`;
+        const values = [
+          dateStart,
+          dateEnd,
+          timeStart,
+          timeEnd,
+          daysString,
+          user,
+          classroom,
+        ];
 
         // Executa a consulta de inserção
-        connect.query(insertQuery,values, function (err) {
+        connect.query(insertQuery, values, function (err) {
           if (err) {
             if (err.code === "ER_NO_REFERENCED_ROW_2") {
               return res.status(404).json({ error: "Sala não encontrada" });
             }
-            console.error(err)
+            console.error(err);
             return res
               .status(500)
               .json({ error: "Erro ao cadastrar agendamento" });
@@ -149,28 +158,36 @@ module.exports = class scheduleController {
   static async getSchedulesByIdUser(req, res) {
     const idUser = req.params.id;
 
-    const query = `select *, calcula_user_reserva(?) as contagem from schedule where user = ?;`
+    const query = `select *, calcula_user_reserva(?) as contagem from schedule where user = ?`;
     const values = [idUser, idUser];
-    try{
+    try {
       connect.query(query, values, function (err, results) {
         if (err) {
           console.error(err);
-          return res.status(500).json({error:"Erro interno do servidor"});
+          return res.status(500).json({ error: "Erro interno do servidor" });
         }
         let contagem = 0;
-        try{
-          if (results.lenght < 1) {
-            return res.status(404).json({error:"Nenhuma reserva para este usuário"});
+        try {
+          if (results.length < 1) {
+            return res
+              .status(200)
+              .json({ message: "Nenhuma reserva para este usuário", results: [], contagem : 0 });
           }
-        contagem = results[0].contagem;}
-        catch(err){
-          return res.status(404).json({error:"Nenhuma reserva para este usuário"})
+          contagem = results[0].contagem;
+        } catch (err) {
+          console.error(err);
+          return res
+            .status(404)
+            .json({ error: "Nenhuma reserva para este usuário" });
         }
         const resultados = results;
-        return res.status(200).json({message:`Reservas recuperadas com sucesso`,results:resultados, contagem:contagem })
-      })
-    }
-    catch (err) {
+        return res.status(200).json({
+          message: `Reservas recuperadas com sucesso`,
+          results: resultados,
+          contagem: contagem,
+        });
+      });
+    } catch (err) {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
   }
@@ -203,7 +220,7 @@ module.exports = class scheduleController {
     }
   }
 
-  static async getSchedulesByIdClassroomRanges(req, res) {
+  static async postSchedulesByIdClassroomRanges(req, res) {
     const { weekStart, weekEnd, classroomID } = req.body; // Variavel para armazenar o dia de início e dia de fim
     // Consulta SQL para obter todos os agendamentos para uma determinada sala de aula
 
@@ -316,7 +333,7 @@ module.exports = class scheduleController {
     }
   }
 
-  static async getSchedulesByIdClassroomRangesAvailable(req, res) {
+  static async postSchedulesByIdClassroomRangesAvailable(req, res) {
     const { weekStart, weekEnd, classroomID } = req.body;
 
     if (!weekStart || !weekEnd || !classroomID) {
@@ -329,23 +346,19 @@ module.exports = class scheduleController {
     const endDate = new Date(weekEnd);
 
     if (startDate > endDate) {
-      return res
-        .status(400)
-        .json({
-          error: "Coloque datas válidas (início deve ser antes do fim).",
-        });
+      return res.status(400).json({
+        error: "Coloque datas válidas (início deve ser antes do fim).",
+      });
     }
 
     const diffTime = endDate.getTime() - startDate.getTime();
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
 
     if (diffDays != 6) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Você só pode consultar uma semana por vez (máximo 6 dias de diferença).",
-        });
+      return res.status(400).json({
+        error:
+        "Selecione um intervalo de uma semana (Ex.: Seg a Dom).",
+      });
     }
 
     try {
@@ -372,7 +385,10 @@ module.exports = class scheduleController {
           AND (dateStart <= ? AND dateEnd >= ?)
         `;
 
-        connect.query(scheduleQuery, [classroomID, weekEnd, weekStart], function (err, results) {
+        connect.query(
+          scheduleQuery,
+          [classroomID, weekEnd, weekStart],
+          function (err, results) {
             if (err) {
               console.error(err);
               return res
@@ -400,7 +416,7 @@ module.exports = class scheduleController {
             results.forEach((schedule) => {
               // Separa os dias do agendamento (ex: "Seg, Qua" → ["Seg", "Qua"])
               const days = schedule.days.split(", ");
-              
+
               // Percorre todas as faixas de horários padrão
               allTimeRanges.forEach((timeRange) => {
                 // Verifica se o horário de início do agendamento cai dentro da determinada faixa de horário
@@ -426,6 +442,64 @@ module.exports = class scheduleController {
     } catch (error) {
       return res.status(500).json({ error: "Erro interno do servidor" });
     }
+  }
+
+  static async postDaysForSchedules(req, res) {
+    const { dateStart, dateEnd } = req.body;
+
+    const listOfDays = {
+      1: "Seg",
+      2: "Ter",
+      3: "Qua",
+      4: "Qui",
+      5: "Sex",
+      6: "Sab",
+    };
+
+    const query = `select diferenca_datas(?, ?)`;
+    const values = [dateStart, dateEnd];
+    connect.query(query, values, (err, result) => {
+      if (err) {
+        console.error(err)
+        return res.status(500).json({ error: "Erro interno de servidor" });
+      }
+    
+    let diaFirst = new Date(dateStart).getDay();
+    let diaLast = new Date(dateEnd).getDay();
+    let diasFinal = [];
+
+    if(diaFirst === diaLast){
+      return res.status(200).json({days:[listOfDays[diaFirst]]});
+    }
+    if (result >= 6) {
+      return res
+        .status(200)
+        .json({ days: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] });
+    } else {
+      const totalDias = Object.keys(listOfDays).map(Number);
+
+      if (diaFirst === 0) diaFirst = 1;
+      if (diaLast === 0) diaLast = 1;
+
+      let i = diaFirst;
+      while (true) {
+        if (listOfDays[i]) {
+          diasFinal.push(listOfDays[i]);
+        }
+
+        if (i === diaLast && diaFirst <= diaLast) break; // intervalo normal (dentro de 1 semana)
+        if (i === diaLast && diaFirst > diaLast) break; // intervalo circular (fim de uma, começo da outra)
+
+        i++;
+        if (i > Math.max(...totalDias)) { //Se o dia selecionado é maior que o maior dia da semana:
+          i = Math.min(...totalDias); // reinicia pro primeiro dia
+        }
+      }
+      
+    }
+
+    return res.status(200).json({days: diasFinal});
+  });
   }
 
   static async deleteSchedule(req, res) {
