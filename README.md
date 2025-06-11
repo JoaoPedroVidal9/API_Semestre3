@@ -70,4 +70,5 @@ DB_NAME= semestre3
 - **GET /schedule/ranges/:id**: Obtém os agendamentos de uma sala de aula específica em intervalos de tempo.
 - **POST /schedule/ranges**: Obtém os horários agendados para uma sala específica
 - **POST /schedule/available**: Obtém os horários livres de agendamento para uma sala específica.
+- **POST /schedule/days**: Processa as datas fornecidas no cadastro da reserva para disponibilizar a escolha de dias da semana.
 - **DELETE /schedule/:id**: Deleta um agendamento.
