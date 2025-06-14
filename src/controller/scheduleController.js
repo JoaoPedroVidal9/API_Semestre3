@@ -171,7 +171,7 @@ module.exports = class scheduleController {
           if (results.length < 1) {
             return res
               .status(200)
-              .json({ message: "Nenhuma reserva para este usuário", results: [], contagem : 0 });
+              .json({ message: "Nenhuma reserva para este usuário", results: [], contagem: 0 });
           }
           contagem = results[0].contagem;
         } catch (err) {
@@ -357,7 +357,7 @@ module.exports = class scheduleController {
     if (diffDays != 6) {
       return res.status(400).json({
         error:
-        "Selecione um intervalo de uma semana (Ex.: Seg a Dom).",
+          "Selecione um intervalo de uma semana (Ex.: Seg a Dom).",
       });
     }
 
@@ -448,58 +448,57 @@ module.exports = class scheduleController {
     const { dateStart, dateEnd } = req.body;
 
     const listOfDays = {
-      1: "Seg",
-      2: "Ter",
-      3: "Qua",
-      4: "Qui",
-      5: "Sex",
-      6: "Sab",
+      0: "Seg",
+      1: "Ter",
+      2: "Qua",
+      3: "Qui",
+      4: "Sex",
+      5: "Sab",
     };
 
-    const query = `select diferenca_datas(?, ?)`;
+    const query = `select diferenca_datas(?, ?) as diffe`;
     const values = [dateStart, dateEnd];
     connect.query(query, values, (err, result) => {
       if (err) {
         console.error(err)
         return res.status(500).json({ error: "Erro interno de servidor" });
       }
-    
-    let diaFirst = new Date(dateStart).getDay();
-    let diaLast = new Date(dateEnd).getDay();
-    let diasFinal = [];
 
-    if(diaFirst === diaLast){
-      return res.status(200).json({days:[listOfDays[diaFirst]]});
-    }
-    if (result >= 6) {
-      return res
-        .status(200)
-        .json({ days: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] });
-    } else {
-      const totalDias = Object.keys(listOfDays).map(Number);
 
-      if (diaFirst === 0) diaFirst = 1;
-      if (diaLast === 0) diaLast = 1;
+      let diaFirst = new Date(dateStart).getDay();
+      let diaLast = new Date(dateEnd).getDay();
+      let diasFinal = [];
 
-      let i = diaFirst;
-      while (true) {
-        if (listOfDays[i]) {
-          diasFinal.push(listOfDays[i]);
+      if (result[0].diffe >= 6) {
+        return res
+          .status(200)
+          .json({ days: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] });
+      } else {
+
+        const totalDias = Object.keys(listOfDays).map(Number);
+
+        if (diaFirst === 6) diaFirst = 0;
+        if (diaLast === 6) diaLast = 0;
+
+        let i = diaFirst;
+        while (true) {
+          if (listOfDays[i]) {
+            diasFinal.push(listOfDays[i]);
+          }
+
+          if (i === diaLast && diaFirst <= diaLast) break; // intervalo normal (dentro de 1 semana)
+          if (i === diaLast && diaFirst > diaLast) break; // intervalo circular (fim de uma, começo da outra)
+
+          i++;
+          if (i > Math.max(...totalDias)) { //Se o dia selecionado é maior que o maior dia da semana:
+            i = Math.min(...totalDias); // reinicia pro primeiro dia
+          }
         }
 
-        if (i === diaLast && diaFirst <= diaLast) break; // intervalo normal (dentro de 1 semana)
-        if (i === diaLast && diaFirst > diaLast) break; // intervalo circular (fim de uma, começo da outra)
-
-        i++;
-        if (i > Math.max(...totalDias)) { //Se o dia selecionado é maior que o maior dia da semana:
-          i = Math.min(...totalDias); // reinicia pro primeiro dia
-        }
       }
-      
-    }
 
-    return res.status(200).json({days: diasFinal});
-  });
+      return res.status(200).json({ days: diasFinal });
+    });
   }
 
   static async deleteSchedule(req, res) {
