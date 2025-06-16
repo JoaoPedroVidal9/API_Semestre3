@@ -448,12 +448,12 @@ module.exports = class scheduleController {
     const { dateStart, dateEnd } = req.body;
 
     const listOfDays = {
-      0: "Seg",
-      1: "Ter",
-      2: "Qua",
-      3: "Qui",
-      4: "Sex",
-      5: "Sab",
+      1: "Seg",
+      2: "Ter",
+      3: "Qua",
+      4: "Qui",
+      5: "Sex",
+      6: "Sab",
     };
 
     const query = `select diferenca_datas(?, ?) as diffe`;
@@ -477,8 +477,8 @@ module.exports = class scheduleController {
 
         const totalDias = Object.keys(listOfDays).map(Number);
 
-        if (diaFirst === 6) diaFirst = 0;
-        if (diaLast === 6) diaLast = 0;
+        if (diaFirst === 0) diaFirst = 1;
+        if (diaLast === 0) diaLast = 1;
 
         let i = diaFirst;
         while (true) {

@@ -15,20 +15,20 @@ router.put("/user/:id", verifyJWT, userController.updateUser);
 router.delete("/user/:id", verifyJWT, userController.deleteUser); 
 
 //Classroom
-router.post("/classroom/", classroomController.createClassroom);
-router.get("/classroom/", classroomController.getAllClassrooms);
-router.get("/classroom/:number", classroomController.getClassroomById);
-router.put("/classroom/", classroomController.updateClassroom);
-router.delete("/classroom/:number", classroomController.deleteClassroom);
+router.post("/classroom/", verifyJWT, classroomController.createClassroom);
+router.get("/classroom/", verifyJWT, classroomController.getAllClassrooms);
+router.get("/classroom/:number", verifyJWT, classroomController.getClassroomById);
+router.put("/classroom/", verifyJWT, classroomController.updateClassroom);
+router.delete("/classroom/:number", verifyJWT, classroomController.deleteClassroom);
 
 //Schedule
-router.post("/schedule/",  scheduleController.createSchedule);
-router.get("/schedule/", scheduleController.getAllSchedules);
-router.get("/schedule/user/:id", scheduleController.getSchedulesByIdUser);
-router.get("/schedule/:id", scheduleController.getSchedulesByIdClassroom);
-router.post("/schedule/ranges/", scheduleController.postSchedulesByIdClassroomRanges);
-router.post("/schedule/available/", scheduleController.postSchedulesByIdClassroomRangesAvailable);
-router.post("/schedule/days/", scheduleController.postDaysForSchedules)
-router.delete("/schedule/:id", scheduleController.deleteSchedule);
+router.post("/schedule/", verifyJWT,  scheduleController.createSchedule);
+router.get("/schedule/", verifyJWT, scheduleController.getAllSchedules);
+router.get("/schedule/user/:id", verifyJWT, scheduleController.getSchedulesByIdUser);
+router.get("/schedule/:id", verifyJWT, scheduleController.getSchedulesByIdClassroom);
+router.post("/schedule/ranges/", verifyJWT, scheduleController.postSchedulesByIdClassroomRanges);
+router.post("/schedule/available/", verifyJWT, scheduleController.postSchedulesByIdClassroomRangesAvailable);
+router.post("/schedule/days/", verifyJWT, scheduleController.postDaysForSchedules)
+router.delete("/schedule/:id", verifyJWT, scheduleController.deleteSchedule);
 
 module.exports = router;
