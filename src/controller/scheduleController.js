@@ -357,7 +357,7 @@ module.exports = class scheduleController {
     if (diffDays != 6) {
       return res.status(400).json({
         error:
-          "Selecione um intervalo de uma semana (Ex.: Seg a Dom).",
+          "Selecione um intervalo de uma semana (Ex.: Seg a Dom, com diferença de 6 dias).",
       });
     }
 
