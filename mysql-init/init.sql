@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `semestre3` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `semestre3`;
--- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: localhost    Database: semestre3
 -- ------------------------------------------------------
--- Server version	8.0.36
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -208,9 +208,10 @@ UNLOCK TABLES;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `create_log_user` AFTER DELETE ON `user` FOR EACH ROW begin
 	insert into `user_log` (
-    cpf, password, email, name)
+    cpf, password, email, name, datetimeDelete)
     values (
-    old.cpf, old.password, old.email, old.name);
+    old.cpf, old.password, old.email, old.name, current_timestamp)
+    ON DUPLICATE KEY UPDATE name = VALUES(name), email = VALUES(email), password = VALUES(password), datetimeDelete = current_timestamp;
 end */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -500,4 +501,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-16  9:39:16
+-- Dump completed on 2025-06-22 12:00:57
