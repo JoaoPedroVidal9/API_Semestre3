@@ -10,6 +10,21 @@ function isInTimeRange(timeStart, timeRange) {
   return scheduleTime >= startTime && scheduleTime < endTime;
 }
 
+function isInTimeRange02(scheduleStart, scheduleEnd, timeRange) {
+  const [rangeStart, rangeEnd] = timeRange.split(" - ");
+
+  const rangeStartTime = new Date(`1970-01-01T${rangeStart}`).getTime();
+  const rangeEndTime = new Date(`1970-01-01T${rangeEnd}`).getTime();
+  const scheduleStartTime = new Date(`1970-01-01T${scheduleStart}`).getTime();
+  const scheduleEndTime = new Date(`1970-01-01T${scheduleEnd}`).getTime();
+
+  // Se houver qualquer interseção entre a faixa e o agendamento
+  return (
+    scheduleStartTime < rangeEndTime && scheduleEndTime > rangeStartTime
+  );
+}
+
+
 module.exports = class scheduleController {
   static async createSchedule(req, res) {
     const { dateStart, dateEnd, days, user, classroom, timeStart, timeEnd } =
@@ -429,7 +444,7 @@ module.exports = class scheduleController {
               // Percorre todas as faixas de horários padrão
               allTimeRanges.forEach((timeRange) => {
                 // Verifica se o horário de início do agendamento cai dentro da determinada faixa de horário
-                if (isInTimeRange(schedule.timeStart, timeRange)) {
+                if (isInTimeRange02(schedule.timeStart, schedule.timeEnd, timeRange)) {
                   // Para cada dia do agendamento
                   days.forEach((day) => {
                     // Verifica se a faixa de horário ainda está disponível naquele dia
