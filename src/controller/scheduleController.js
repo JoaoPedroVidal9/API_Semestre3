@@ -472,12 +472,12 @@ module.exports = class scheduleController {
     const { dateStart, dateEnd } = req.body;
 
     const listOfDays = {
-      1: "Seg",
-      2: "Ter",
-      3: "Qua",
-      4: "Qui",
-      5: "Sex",
-      6: "Sab",
+      0: "Seg",
+      1: "Ter",
+      2: "Qua",
+      3: "Qui",
+      4: "Sex",
+      5: "Sab",
     };
 
     const query = `select diferenca_datas(?, ?) as diffe`;
